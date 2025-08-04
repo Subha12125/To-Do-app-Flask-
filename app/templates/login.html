@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Login - To-Do App{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="login-box">
+        <h2>🔐 Welcome Back!</h2>
+        <p style="color: #666; margin-bottom: 30px;">Please sign in to access your tasks</p>
+        
+        <form action="{{ url_for('auth.login') }}" method="POST">
+            <div class="form-group">
+                <label for="username">👤 Username</label>
+                <input type="text" id="username" name="username" required 
+                       placeholder="Enter your username" autocomplete="username">
+            </div>
+            <div class="form-group">
+                <label for="password">🔒 Password</label>
+                <input type="password" id="password" name="password" required 
+                       placeholder="Enter your password" autocomplete="current-password">
+            </div>
+            <button type="submit" class="btn">Sign In</button>
+        </form>
+        
+        <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 14px;">
+            <p><strong>Demo Credentials:</strong></p>
+            <p>Username: <code>admin</code> | Password: <code>1234</code></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

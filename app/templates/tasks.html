@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Tasks - To-Do App{% endblock %}
+
+{% block content %}
+<div class="task-box">
+    <h2>📋 Your Tasks</h2>
+    
+    <!-- Add Task Form -->
+    <form action="{{ url_for('tasks.add_task') }}" method="POST" class="task-form">
+        <input type="text" name="title" placeholder="What needs to be done?" required maxlength="100">
+        <button type="submit" class="btn">➕ Add Task</button>
+    </form>
+
+    {% if tasks %}
+        <!-- Task Statistics -->
+        <div style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px; display: flex; justify-content: space-around; text-align: center;">
+            <div>
+                <strong style="color: #856404;">{{ tasks|selectattr("status", "equalto", "Pending")|list|length }}</strong>
+                <br><small>Pending</small>
+            </div>
+            <div>
+                <strong style="color: #004085;">{{ tasks|selectattr("status", "equalto", "Working")|list|length }}</strong>
+                <br><small>In Progress</small>
+            </div>
+            <div>
+                <strong style="color: #155724;">{{ tasks|selectattr("status", "equalto", "Done")|list|length }}</strong>
+                <br><small>Completed</small>
+            </div>
+            <div>
+                <strong style="color: #333;">{{ tasks|length }}</strong>
+                <br><small>Total</small>
+            </div>
+        </div>
+
+        <!-- Clear All Tasks Button -->
+        <div style="margin: 20px 0; text-align: right;">
+            <form action="{{ url_for('tasks.clear_tasks') }}" method="POST" style="display: inline;">
+                <button type="submit" class="btn-clear">🗑️ Clear All Tasks</button>
+            </form>
+        </div>
+
+        <!-- Tasks Table -->
+        <table class="task-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Task</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in tasks %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td style="font-weight: 500;">{{ task.title }}</td>
+                    <td>
+                        <span class="badge {{ task.status.lower() }}">
+                            {% if task.status == 'Pending' %}⏳ Pending
+                            {% elif task.status == 'Working' %}🔄 In Progress
+                            {% else %}✅ Done
+                            {% endif %}
+                        </span>
+                    </td>
+                    <td style="font-size: 12px; color: #666;">
+                        {{ task.created_at.strftime('%Y-%m-%d %H:%M') if task.created_at else 'N/A' }}
+                    </td>
+                    <td>
+                        <form action="{{ url_for('tasks.toggle_task', task_id=task.id) }}" method="POST" style="display: inline;">
+                            <button type="submit" class="btn-small" title="Change status">
+                                {% if task.status == 'Pending' %}▶️
+                                {% elif task.status == 'Working' %}✅
+                                {% else %}🔄
+                                {% endif %}
+                            </button>
+                        </form>
+                        <form action="{{ url_for('tasks.delete_task', task_id=task.id) }}" method="POST" style="display: inline;">
+                            <button type="submit" class="btn-small btn-delete" title="Delete task">🗑️</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="no-tasks">
+            <p>🎉 No tasks yet! Add your first task above to get started.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
